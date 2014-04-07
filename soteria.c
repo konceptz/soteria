@@ -167,37 +167,3 @@ int main( int argc, char *argv[] )
 	return 1;
 
 }
-
-void merge_arrays(int a[], int low, int mid, int high)
-{
-    int temp[10000];
-    int i = low, j = mid + 1, k = 0;
-  
-    while (i <= mid && j <= high) {
-        if (a[i] <= a[j])
-            temp[k++] = a[i++];
-        else
-            temp[k++] = a[j++];
-    }
-    while (i <= mid)
-        temp[k++] = a[i++];
-  
-    while (j <= high)
-        temp[k++] = a[j++];
-  
-    k--;
-    while (k >= 0) {
-        a[low + k] = temp[k];
-        k--;
-    }
-}
-  
-void merge_sort(int a[], int low, int high)
-{
-    if (low < high) {
-        int m = (high + low)/2;
-        merge_sort(a, low, m);
-        merge_sort(a, m + 1, high);
-        merge_arrays(a, low, m, high);
-    }
-}
