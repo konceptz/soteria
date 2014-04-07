@@ -23,6 +23,67 @@
 #include <pthread.h>
 
 
+int recv_block(int sock, void *buffer, int length){
+    //unsigned char *head_buffer = malloc(sizeof(unsigned char));
+    //unsigned char *end_buffer = malloc(sizeof(unsigned char)*3);
+    unsigned char head_buffer[1];
+    int r = 0;
+    int ret = 0;
+
+
+    //printf("asking for %i bytes\n", length);
+
+    while (1){
+        ret = recv(sock, &head_buffer, 1, 0);
+        //printf("%s", head_buffer);
+        //printf("Got: %s\n", head_buffer);
+        if (ret < 0){
+            printf("Error\n");
+            return -1;
+        }
+        if (head_buffer[0] == '\r') {
+    //      bzero(head_buffer, 1);
+            ret = recv(sock, &head_buffer, 1, 0);
+        //printf("%s", head_buffer);
+            if (head_buffer[0] == '\n') {
+    //          bzero(head_buffer, 1);
+                ret = recv(sock, &head_buffer, 1, 0);
+        //printf("%s", head_buffer);
+            }
+            if (head_buffer[0] == '\r') {
+    //          bzero(head_buffer, 1);
+                ret = recv(sock, &head_buffer, 1, 0);
+        //printf("%s", head_buffer);
+            }
+            if (head_buffer[0] == '\n') {
+            //  printf("Found End of Header\n");
+                break;
+            }
+        }
+
+
+    }
+
+
+    while (r < length){
+        ret = recv(sock, buffer+r, length - r, 0);
+        if (ret < 0){
+            printf("Error\n");
+            return -1;
+        }
+        r += ret;
+    }
+    //free(head_buffer);
+    //free(end_buffer);
+    //close(sock);
+
+    return r;
+
+
+
+}
+
+
 void *connection_handler(int newsockfd){
 
 
