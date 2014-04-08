@@ -86,8 +86,13 @@ int recv_block(int sock, void *buffer, int length){
 
 void *connection_handler(int newsockfd){
 
-
+    unsigned char * buffer = malloc(sizeof(unsigned char)*1024);
+    read(newsockfd, buffer, 1024);
+    printf("%s", buffer);
+	//printf("Running response\n");
 	/*	Handle new connections Here */
+	//write(newsockfd, "HTTP/1.1 200 OK\r\n\r\n<HTML><h1>Hello</h1></HTML>", 34);
+	//write(newsockfd, "hello", 5);
 
 	close(newsockfd);
 	pthread_exit(NULL);
