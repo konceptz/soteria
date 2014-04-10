@@ -80,7 +80,13 @@ void *connection_handler(int newsockfd){
     printf("%s", buffer);
 	//printf("Running response\n");
 	/*	Handle new connections Here */
-	write(newsockfd, "HTTP/1.1 200 OK\r\n\r\n<HTML><h1>Hello</h1></HTML>",50);
+	char *header = (char *)malloc(512);
+	strcpy(header, "HTTP/1.1 200 OK\r\n");
+	strcat(header, "Custom-Field: Soteria\r\n");
+	strcat(header, "Content-Type: text/html; charset=utf-8\r\n");
+	strcat(header, "Cache-Control: no-cache, no-store, must-revalidate\r\n\r\n");
+	strcat(header, "<html><head></head><body><p>Hello</p></body></html>");
+	write(newsockfd, header,strlen(header));
 	//write(newsockfd, "hello", 5);
 
 	close(newsockfd);
