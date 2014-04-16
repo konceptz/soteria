@@ -23,47 +23,42 @@
 #include <pthread.h>
 
 
-int recv_block(int sock, void *buffer, int length){
-    //unsigned char *head_buffer = malloc(sizeof(unsigned char));
-    //unsigned char *end_buffer = malloc(sizeof(unsigned char)*3);
+int recv_data_block_of_known_size(int sock, void *buffer, int length){
+    
+    /*
+        This function will strip any header and retreive a data block from the user of known size.
+
+WARNING:  There is a possibility for a buffer overrun attack in this function.
+
+    */
+
     unsigned char head_buffer[1];
     int r = 0;
     int ret = 0;
 
 
-    //printf("asking for %i bytes\n", length);
 
+    //Search the stream character by character for "\r\n\r\n" which is the end of a an HTTP header.
     while (1){
         ret = recv(sock, &head_buffer, 1, 0);
-        //printf("%s", head_buffer);
-        //printf("Got: %s\n", head_buffer);
         if (ret < 0){
             printf("Error\n");
             return -1;
         }
         if (head_buffer[0] == '\r') {
-    //      bzero(head_buffer, 1);
             ret = recv(sock, &head_buffer, 1, 0);
-        //printf("%s", head_buffer);
             if (head_buffer[0] == '\n') {
-    //          bzero(head_buffer, 1);
                 ret = recv(sock, &head_buffer, 1, 0);
-        //printf("%s", head_buffer);
             }
             if (head_buffer[0] == '\r') {
-    //          bzero(head_buffer, 1);
                 ret = recv(sock, &head_buffer, 1, 0);
-        //printf("%s", head_buffer);
             }
             if (head_buffer[0] == '\n') {
-            //  printf("Found End of Header\n");
                 break;
             }
         }
 
-
     }
-
 
     while (r < length){
         ret = recv(sock, buffer+r, length - r, 0);
@@ -73,21 +68,26 @@ int recv_block(int sock, void *buffer, int length){
         }
         r += ret;
     }
-    //free(head_buffer);
-    //free(end_buffer);
-    //close(sock);
-
     return r;
-
-
 
 }
 
 
 void *connection_handler(int newsockfd){
 
-
+    unsigned char * buffer = malloc(sizeof(unsigned char)*1024);
+    read(newsockfd, buffer, 1024);
+    printf("%s", buffer);
+	//printf("Running response\n");
 	/*	Handle new connections Here */
+	char *header = (char *)malloc(512);
+	strcpy(header, "HTTP/1.1 200 OK\r\n");
+	strcat(header, "Custom-Field: Soteria\r\n");
+	strcat(header, "Content-Type: text/html; charset=utf-8\r\n");
+	strcat(header, "Cache-Control: no-cache, no-store, must-revalidate\r\n\r\n");
+	strcat(header, "<html><head></head><body><p>Hello</p></body></html>");
+	write(newsockfd, header,strlen(header));
+	//write(newsockfd, "hello", 5);
 
 	close(newsockfd);
 	pthread_exit(NULL);
