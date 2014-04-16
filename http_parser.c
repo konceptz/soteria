@@ -12,7 +12,7 @@ size_t http_parser_execute(struct Http* http, const char* data, size_t len) {
     size_t bytes_read;
     char tok;
 
-    for(data_ptr = data, bytes_read = 0; data_ptr != (data+len); ++data_ptr) {
+    for(data_ptr = data, bytes_read = 0; data_ptr != (data+len); ++data_ptr, ++bytes_read) {
 
         tok = *data_ptr;
 
